@@ -31,7 +31,7 @@ int main (int argc, char **argv)
     exit (EXIT_FAILURE);
   }
   char *filename = argv[1];
-  FILE *file = fopen (filename, "rb+");
+  FILE *file = fopen (filename, "rb");
   Buffer *buffer = newBuffer();
   while (!(feof(file)||ferror(file)))
   {
@@ -83,7 +83,13 @@ int main (int argc, char **argv)
       bufferAppend (buffer, c);
     }
   }
-  rewind (file);
+  fclose (file);
+  file = fopen (filename, "wb");
+  if (file==NULL)
+  {
+    perror ("fopen wb");
+    return EXIT_FAILURE;
+  }
   fwrite (buffer->array, 1, buffer->len, file);
   fclose (file);
   return EXIT_SUCCESS;
